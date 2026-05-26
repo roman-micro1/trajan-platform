@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline Trajan - Doc Eval Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="light"],html[data-theme="light"]{
+  --bg:#f6f7fb;--bg2:#fff;--bg3:#f0f2f7;--surface:#f3f5fa;--surface2:#e8ebf2;
+  --border:#e2e6ef;--border2:#cdd3e0;
+  --text:#1a1d26;--text2:#5c6370;--text3:#8b929e;
+  --accent:#4169ff;--accent-dim:rgba(65,105,255,0.1);--accent-light:#3558e0;
+  --teal:#0d9488;--teal-dim:rgba(13,148,136,0.1);--teal-light:#0f766e;
+  --green:#16a34a;--green-dim:rgba(22,163,74,0.1);
+  --amber:#d97706;--amber-dim:rgba(217,119,6,0.1);
+  --red:#dc2626;--red-dim:rgba(220,38,38,0.1);
+  --purple:#7c3aed;--purple-dim:rgba(124,58,237,0.1);
+  --shadow:0 1px 3px rgba(15,18,28,0.06);
+  --radius:6px;--radius-lg:10px;
+  --font-sans:'Inter',system-ui,sans-serif;--font-mono:'SF Mono','Fira Code',monospace;
+}
+[data-theme="dark"],html[data-theme="dark"]{
+  --bg:#08090e;--bg2:#0d0e16;--bg3:#111320;--surface:#151826;--surface2:#1b1f30;
+  --border:#232840;--border2:#2d3355;
+  --text:#e4e6f0;--text2:#8890b0;--text3:#4a5070;
+  --accent:#6b8cff;--accent-dim:rgba(107,140,255,0.12);--accent-light:#8ba3ff;
+  --teal:#14b8a6;--teal-dim:rgba(20,184,166,0.12);--teal-light:#5eead4;
+  --green:#22c55e;--green-dim:rgba(34,197,94,0.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.15);
+  --shadow:0 1px 3px rgba(0,0,0,0.25);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);min-height:100vh;font-family:var(--font-sans);font-size:13px;transition:background .2s,color .2s;}
+body[data-theme="light"]{color-scheme:light;}
+body[data-theme="dark"]{color-scheme:dark;}
+
+.sidebar{position:fixed;left:0;top:0;width:210px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:200;box-shadow:var(--shadow);}
+.sidebar-logo{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
+.logo-mark{width:28px;height:28px;border-radius:6px;background:var(--accent-dim);border:1px solid rgba(65,105,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--accent);}
+.logo-text{font-size:15px;font-weight:700;letter-spacing:-.3px;}
+.sidebar-nav{padding:10px 8px;flex:1;overflow-y:auto;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);font-size:13px;font-weight:500;margin-bottom:2px;}
+.nav-item:hover{background:var(--surface);color:var(--text);}
+.nav-item.active{background:var(--accent-dim);color:var(--text);}
+.nav-step{font-size:10px;font-family:var(--font-mono);color:var(--text3);margin-left:auto;}
+.sidebar-footer{padding:12px 16px;border-top:1px solid var(--border);}
+.user-row{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--teal-dim);border:1px solid rgba(13,148,136,.3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--teal);}
+.user-name{font-size:12px;font-weight:600;}
+.user-role{font-size:11px;color:var(--text3);}
+
+.main{margin-left:210px;min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-title{font-size:17px;font-weight:600;}
+.topbar-sub{font-size:12px;color:var(--text3);margin-top:2px;}
+.workflow-steps{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;}
+.wf-step{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;}
+.wf-step.done{color:var(--text2);}
+.wf-dot{width:6px;height:6px;border-radius:50%;background:var(--border2);}
+.wf-step.done .wf-dot{background:var(--green);}
+.wf-step.active{color:var(--accent);font-weight:600;}
+.wf-step.active .wf-dot{background:var(--accent);}
+.wf-sep{color:var(--text3);font-size:10px;}
+.topbar-actions{display:flex;align-items:center;gap:10px;}
+.theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-sans);}
+.theme-toggle:hover{background:var(--surface);color:var(--text);}
+.theme-toggle svg{width:16px;height:16px;}
+
+.page{display:none;flex:1;flex-direction:column;overflow:hidden;}
+.page.active{display:flex;}
+.page-body{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+
+.btn{padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--font-sans);display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-primary:hover{filter:brightness(1.05);}
+.btn-primary:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.input,.select,.textarea{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;color:var(--text);font-size:13px;font-family:var(--font-sans);outline:none;width:100%;}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--accent);}
+.textarea{resize:vertical;line-height:1.55;}
+.pill{display:inline-flex;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.pill-teal{background:var(--teal-dim);color:var(--teal);}
+.pill-accent{background:var(--accent-dim);color:var(--accent);}
+.pill-green{background:var(--green-dim);color:var(--green);}
+.pill-amber{background:var(--amber-dim);color:var(--amber);}
+.pill-red{background:var(--red-dim);color:var(--red);}
+.pill-gray{background:rgba(139,145,168,.12);color:var(--text2);}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:var(--radius);opacity:0;transition:opacity .2s;pointer-events:none;z-index:600;}
+.toast.show{opacity:1;}
+
+/* TASKS */
+.tasks-content{padding:20px 24px;overflow-y:auto;flex:1;}
+.page-h1{font-size:20px;font-weight:600;margin-bottom:14px;}
+.status-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px;overflow-x:auto;}
+.status-tab{padding:10px 16px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;}
+.status-tab:hover{color:var(--text);}
+.status-tab.active{color:var(--text);border-bottom-color:var(--accent);}
+.tab-count{font-size:10px;font-family:var(--font-mono);padding:1px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);margin-left:5px;}
+.status-tab.active .tab-count{background:var(--accent-dim);color:var(--accent);}
+.filters-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.search-wrap{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;flex:1;max-width:280px;}
+.search-wrap:focus-within{border-color:var(--accent);}
+.search-input{font-size:12px;background:transparent;border:none;outline:none;color:var(--text);font-family:var(--font-sans);width:100%;}
+.table-wrap{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg2);box-shadow:var(--shadow);flex:1;overflow-y:auto;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);background:var(--surface);}
+thead th{padding:9px 14px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;text-align:left;white-space:nowrap;}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;}
+tbody tr:hover td{background:var(--surface);}
+tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
+.td-title{font-size:13px;font-weight:500;color:var(--text);max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td-sub{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--font-mono);}
+.pager{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:12px;color:var(--text3);}
+
+/* CORPUS */
+.corpus-toolbar{padding:12px 20px;border-bottom:1px solid var(--border);background:var(--bg2);display:flex;gap:10px;flex-wrap:wrap;align-items:center;flex-shrink:0;}
+.corpus-workspace{display:flex;flex:1;overflow:hidden;}
+.cluster-panel{width:200px;border-right:1px solid var(--border);background:var(--bg2);overflow-y:auto;flex-shrink:0;}
+.cluster-panel-h{padding:10px 14px;border-bottom:1px solid var(--border);font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;}
+.cluster-item{padding:8px 14px;cursor:pointer;border-left:2px solid transparent;}
+.cluster-item:hover{background:var(--surface);}
+.cluster-item.active{background:var(--accent-dim);border-left-color:var(--accent);}
+.cluster-name{font-size:12px;font-weight:500;color:var(--text);}
+.cluster-item.active .cluster-name{color:var(--accent);}
+.cluster-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.cluster-count{float:right;font-size:10px;font-family:var(--font-mono);padding:1px 6px;border-radius:3px;background:var(--bg3);color:var(--text3);}
+.doc-panel{flex:1;overflow-y:auto;padding:16px 20px;min-width:0;}
+.doc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+.doc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 14px;cursor:pointer;box-shadow:var(--shadow);}
+.doc-card:hover{border-color:var(--border2);}
+.doc-card.selected{border-color:var(--accent);background:var(--accent-dim);}
+.doc-card.in-query{border-color:var(--teal);}
+.doc-card-name{font-size:12px;font-weight:500;color:var(--text);line-height:1.4;margin-bottom:6px;}
+.doc-type-badge{font-size:10px;padding:2px 7px;border-radius:3px;background:var(--bg3);color:var(--text2);display:inline-block;margin-bottom:8px;}
+.doc-meta{font-size:11px;color:var(--text3);display:grid;gap:3px;}
+.detail-panel{width:260px;border-left:1px solid var(--border);background:var(--bg2);display:flex;flex-direction:column;flex-shrink:0;}
+.detail-body{flex:1;overflow-y:auto;padding:14px;font-size:12px;color:var(--text2);}
+.detail-empty{color:var(--text3);text-align:center;padding:24px 12px;line-height:1.6;}
+.detail-actions{padding:12px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px;}
+.selected-tray{padding:10px 20px;border-top:1px solid var(--border);background:var(--bg2);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.tray-docs{display:flex;gap:6px;flex:1;overflow-x:auto;}
+.tray-chip{font-size:11px;padding:3px 9px;border-radius:4px;background:var(--teal-dim);color:var(--teal);border:1px solid rgba(13,148,136,.25);white-space:nowrap;display:flex;gap:5px;align-items:center;}
+.tray-x{cursor:pointer;opacity:.7;}
+.tray-x:hover{opacity:1;}
+
+/* QUERY CREATION */
+.query-workspace{display:flex;flex:1;overflow:hidden;}
+.context-panel{width:240px;border-right:1px solid var(--border);background:var(--bg2);overflow-y:auto;flex-shrink:0;padding:12px;}
+.context-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;font-size:12px;}
+.context-card-name{font-weight:500;color:var(--text);margin-bottom:4px;}
+.context-card-meta{font-size:11px;color:var(--text3);}
+.query-form-panel{flex:1;overflow-y:auto;padding:20px 24px;}
+.form-section{margin-bottom:20px;}
+.form-section-title{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.form-hint{font-size:12px;color:var(--text2);margin-bottom:8px;line-height:1.5;}
+.tag-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tag-option{padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;}
+.tag-option.selected{background:var(--accent-dim);border-color:var(--accent);}
+.tag-option-name{font-size:12px;font-weight:500;color:var(--text2);}
+.tag-option.selected .tag-option-name{color:var(--accent);}
+.tag-option-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.4;}
+.usage-grid{display:flex;flex-wrap:wrap;gap:6px;}
+.usage-chip{font-size:12px;padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;}
+.usage-chip.selected{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.true-pos-row{display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);}
+.toggle{width:36px;height:20px;background:var(--bg3);border-radius:10px;border:1px solid var(--border);cursor:pointer;position:relative;flex-shrink:0;}
+.toggle.on{background:var(--accent);border-color:var(--accent);}
+.toggle-knob{width:14px;height:14px;background:var(--text3);border-radius:50%;position:absolute;top:2px;left:2px;transition:left .15s,background .15s;}
+.toggle.on .toggle-knob{left:18px;background:#fff;}
+.mapping-table-wrap{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg2);}
+.mapping-table{width:100%;border-collapse:collapse;}
+.mapping-table th{padding:8px 12px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;text-align:left;background:var(--surface);border-bottom:1px solid var(--border);}
+.mapping-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;}
+.map-doc-name{font-weight:500;color:var(--text);margin-bottom:2px;}
+.map-doc-type{font-size:11px;color:var(--text3);}
+.role-btns{display:flex;gap:4px;}
+.role-btn{font-size:11px;padding:4px 10px;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:transparent;color:var(--text2);font-family:var(--font-sans);}
+.role-btn.primary.active{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.role-btn.supporting.active{background:var(--surface);border-color:var(--border2);color:var(--text);}
+.map-evidence,.map-location{font-size:12px;min-height:52px;}
+.map-location{margin-top:6px;font-family:var(--font-mono);font-size:11px;}
+.mapping-footer{padding:8px 12px;font-size:11px;color:var(--text3);background:var(--surface);display:flex;gap:14px;}
+.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px;}
+.val-row{display:flex;flex-direction:column;gap:5px;margin-top:8px;}
+.val-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);}
+.val-item.pass{color:var(--green);}
+.val-item.fail{color:var(--red);}
+.val-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;}
+.query-side{width:220px;border-left:1px solid var(--border);background:var(--bg2);padding:14px 12px;overflow-y:auto;flex-shrink:0;}
+.example-q{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:11px;color:var(--text2);margin-bottom:6px;cursor:pointer;line-height:1.4;}
+.example-q:hover{border-color:var(--accent);}
+.bottom-bar{padding:12px 20px;border-top:1px solid var(--border);background:var(--bg2);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+
+/* EVAL */
+.eval-top{padding:12px 20px;border-bottom:1px solid var(--border);background:var(--bg2);flex-shrink:0;}
+.query-pill{font-size:13px;font-weight:500;padding:5px 14px;border-radius:20px;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(65,105,255,.2);display:inline-block;max-width:100%;}
+.eval-meta{font-size:11px;color:var(--text3);margin-top:8px;}
+.eval-workspace{display:flex;flex:1;overflow:hidden;}
+.eval-main{flex:1;overflow-y:auto;padding:16px 20px;}
+.result-card{margin-bottom:10px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:var(--bg2);box-shadow:var(--shadow);}
+.result-card.relevant{border-color:rgba(22,163,74,.45);}
+.result-card.partial{border-color:rgba(217,119,6,.45);}
+.result-card.not-relevant{border-color:rgba(220,38,38,.35);}
+.result-card.hard-neg{border-color:var(--red);}
+.card-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface);border-bottom:1px solid var(--border);gap:10px;flex-wrap:wrap;}
+.rank-num{font-size:11px;font-weight:700;font-family:var(--font-mono);color:var(--accent);background:var(--accent-dim);padding:2px 8px;border-radius:4px;}
+.rest-name{font-size:13px;font-weight:600;}
+.rest-meta{font-size:11px;color:var(--text2);}
+.card-body{padding:12px 14px;}
+.card-fields{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+.field-label{font-size:10px;color:var(--text3);text-transform:uppercase;}
+.field-val{font-size:12px;color:var(--text2);}
+.score-btns{display:flex;gap:3px;}
+.sb{font-size:11px;padding:4px 10px;border:1px solid var(--border2);border-radius:var(--radius);cursor:pointer;background:transparent;color:var(--text2);font-family:var(--font-sans);}
+.sb.rel.active-score{background:var(--green-dim);border-color:var(--green);color:var(--green);}
+.sb.part.active-score{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
+.sb.not.active-score{background:var(--red-dim);border-color:var(--red);color:var(--red);}
+.evidence-row{display:flex;gap:8px;margin-bottom:8px;}
+.eval-side{width:240px;border-left:1px solid var(--border);background:var(--bg2);padding:14px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
+.stat-row{display:flex;justify-content:space-between;padding:6px 9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;font-size:12px;}
+.stat-val.good{color:var(--green);}.stat-val.warn{color:var(--amber);}.stat-val.bad{color:var(--red);}
+.recall-section{margin-top:12px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);}
+.recall-miss-row{display:flex;gap:8px;margin-bottom:8px;}
+@media(max-width:1100px){.sidebar{width:60px;}.sidebar .logo-text,.nav-item>span:first-child,.user-row div:last-child,.nav-step{display:none;}.main{margin-left:60px;}.query-workspace,.eval-workspace{flex-direction:column;}.context-panel,.query-side,.eval-side,.detail-panel{width:100%;max-height:200px;border:none;border-bottom:1px solid var(--border);}}
+</style>
+</head>
+<body data-theme="light">
+
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">T</div>
+    <span class="logo-text">Trajan</span>
+  </div>
+  <nav class="sidebar-nav" id="sidebar-nav">
+    <div class="nav-item" data-page="tasks"><span>My Tasks</span></div>
+    <div class="nav-item" data-page="corpus"><span>Corpus Browser</span><span class="nav-step">1</span></div>
+    <div class="nav-item" data-page="query"><span>Query Creation</span><span class="nav-step">2</span></div>
+    <div class="nav-item" data-page="eval"><span>Doc Retrieval Eval</span><span class="nav-step">3</span></div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-row">
+      <div class="user-avatar">SK</div>
+      <div><div class="user-name">Sarah Kim</div><div class="user-role">Expert</div></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">My Tasks</div>
+      <div class="workflow-steps" id="workflow-steps"></div>
+    </div>
+    <div class="topbar-actions">
+      <button class="theme-toggle" id="theme-toggle" type="button" onclick="toggleTheme()">
+        <svg id="theme-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 1.5a6.5 6.5 0 107.5 7.5A5.5 5.5 0 118 1.5z"/></svg>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- TASKS -->
+  <section class="page active" id="page-tasks">
+    <div class="page-body">
+      <div class="tasks-content">
+        <h1 class="page-h1">My Tasks</h1>
+        <div class="status-tabs" id="task-tabs"></div>
+        <div class="filters-row">
+          <div class="search-wrap">
+            <input class="search-input" id="task-search" placeholder="Search your queries..." oninput="renderTasks()">
+          </div>
+          <select class="select" style="width:auto" id="task-cluster-filter" onchange="renderTasks()">
+            <option value="">All clusters</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="startNewTask()">+ New task</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Query</th><th>Status</th><th>Cluster</th><th>Intent</th><th>Updated</th><th></th></tr></thead>
+            <tbody id="task-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pager"><span id="task-pager-info"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CORPUS -->
+  <section class="page" id="page-corpus">
+    <div class="page-body">
+      <div class="corpus-toolbar">
+        <div class="search-wrap" style="max-width:360px;flex:1">
+          <input class="search-input" id="corpus-search" placeholder="Search documents..." oninput="renderCorpusDocs()">
+        </div>
+        <select class="select" style="width:auto" id="filter-doc-type" onchange="renderCorpusDocs()"><option value="">All doc types</option></select>
+        <select class="select" style="width:auto" id="filter-conf" onchange="renderCorpusDocs()">
+          <option value="">All confidentiality</option><option>Proprietary</option><option>Highly Confidential</option><option>Public</option>
+        </select>
+        <button class="btn btn-secondary btn-sm" onclick="clearCorpusFilters()">Clear</button>
+      </div>
+      <div class="corpus-workspace">
+        <div class="cluster-panel">
+          <div class="cluster-panel-h">Clusters</div>
+          <div id="cluster-list"></div>
+        </div>
+        <div class="doc-panel">
+          <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:11px;color:var(--text3)">
+            <span id="corpus-panel-title">Project Butterfly</span>
+            <span id="corpus-count-label"></span>
+          </div>
+          <div class="doc-grid" id="doc-grid"></div>
+        </div>
+        <div class="detail-panel">
+          <div class="detail-body" id="detail-body"><div class="detail-empty">Select a document to view metadata</div></div>
+          <div class="detail-actions" id="detail-actions" style="display:none">
+            <button class="btn btn-primary btn-sm" id="use-doc-btn" onclick="toggleDocForQuery()">Add to query</button>
+          </div>
+        </div>
+      </div>
+      <div class="selected-tray">
+        <span style="font-size:11px;color:var(--text3);white-space:nowrap">Selected:</span>
+        <div class="tray-docs" id="tray-docs"><span style="font-size:11px;color:var(--text3);font-style:italic">None</span></div>
+        <button class="btn btn-primary btn-sm" id="to-query-btn" disabled onclick="goToQueryCreation()">Continue to Query Creation</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUERY CREATION -->
+  <section class="page" id="page-query">
+    <div class="page-body">
+      <div class="query-workspace">
+        <div class="context-panel" id="query-context-panel"></div>
+        <div class="query-form-panel">
+          <div class="form-section">
+            <div class="form-section-title">Query text</div>
+            <p class="form-hint">Write a structured finance or legal query grounded in your selected documents. At least one corpus document must contain a true positive answer.</p>
+            <textarea class="textarea" id="query-text" rows="4" maxlength="500" placeholder="e.g. What was the target's EBITDA margin and how did it trend over the last two fiscal years?" oninput="onQueryInput()"></textarea>
+            <div style="text-align:right;font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:4px" id="char-count">0 / 500</div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Query intent type</div>
+            <div class="tag-grid" id="intent-grid"></div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Usage type</div>
+            <div class="usage-grid" id="usage-grid"></div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Ground truth document mapping</div>
+            <p class="form-hint">For each selected document, assign <strong>Primary</strong> or <strong>Supporting</strong> and provide evidence/reasoning for why it answers the query.</p>
+            <div class="mapping-table-wrap">
+              <table class="mapping-table">
+                <thead><tr><th>Document</th><th>Role</th><th>Evidence / reasoning</th></tr></thead>
+                <tbody id="mapping-tbody"></tbody>
+              </table>
+              <div class="mapping-footer" id="mapping-footer">
+                <span><span class="legend-dot" style="background:var(--teal)"></span>Primary</span>
+                <span><span class="legend-dot" style="background:var(--text3)"></span>Supporting</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">True positive confirmation</div>
+            <div class="true-pos-row">
+              <div class="toggle on" id="true-pos-toggle" onclick="toggleTruePos()"><div class="toggle-knob"></div></div>
+              <span style="font-size:12px;color:var(--text2)">I confirm at least one document in the corpus contains a relevant answer to this query</span>
+            </div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Validation</div>
+            <div class="val-row" id="validation-row"></div>
+          </div>
+        </div>
+        <div class="query-side">
+          <div class="form-section-title">Example queries</div>
+          <div id="example-queries"></div>
+        </div>
+      </div>
+      <div class="bottom-bar">
+        <span style="font-size:12px;color:var(--text3)" id="query-bottom-meta"></span>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" onclick="showPage('corpus')">Back to Corpus</button>
+          <button class="btn btn-primary" id="submit-query-btn" disabled onclick="submitQuery()">Submit and run retrieval</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVAL -->
+  <section class="page" id="page-eval">
+    <div class="page-body">
+      <div class="eval-top">
+        <div class="query-pill" id="eval-query-pill"></div>
+        <div class="eval-meta" id="eval-meta"></div>
+      </div>
+      <div class="eval-workspace">
+        <div class="eval-main" id="eval-cards"></div>
+        <div class="eval-side">
+          <div class="form-section-title">Progress</div>
+          <div id="eval-stats"></div>
+          <div class="form-section-title" style="margin-top:14px">Before submit</div>
+          <div id="eval-checklist" style="font-size:12px;color:var(--text2);line-height:1.8">
+            <div>All docs labeled</div>
+            <div>Evidence and reasoning filled</div>
+            <div>Hard negatives reviewed</div>
+          </div>
+          <button class="btn btn-primary" style="margin-top:auto;width:100%" onclick="showToast('Task submitted')">Submit evaluation</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const INTENTS = [
+  {id:'document_identification', name:'document_identification', desc:'Finding a specific document type in the corpus'},
+  {id:'comparative_analysis', name:'comparative_analysis', desc:'Queries requiring multiple docs to compare'},
+  {id:'temporal_tracking', name:'temporal_tracking', desc:'Monitoring or change-over-time queries'},
+  {id:'thematic_screening', name:'thematic_screening', desc:'Broad thesis-driven sourcing queries'},
+  {id:'compliance_verification', name:'compliance_verification', desc:'Checking whether conditions or requirements are met'},
+  {id:'extraction_for_synthesis', name:'extraction_for_synthesis', desc:'Pulling structured data to populate a model or memo'},
+];
+const USAGES = ['Core Diligence & Screening','Document Review & Drafting','Legal & Regulatory','Structured Extraction','Monitoring & Updates'];
+
+const CLUSTERS = {
+  butterfly:{name:'Project Butterfly', meta:'Packaging | Buyout', count:10},
+  horizon:{name:'Project Horizon', meta:'Healthcare | Buyout', count:5},
+  atlas:{name:'Project Atlas', meta:'Technology | Growth', count:3},
+  nova:{name:'Project Nova', meta:'Industrials | Buyout', count:3},
+  cedar:{name:'Project Cedar', meta:'Consumer | Buyout', count:2},
+};
+
+const ALL_DOCS = {
+  butterfly:[
+    {id:'b1',name:'Project Butterfly - Fact Pack',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Company Advisor'},
+    {id:'b2',name:'Project Butterfly - Current Trading Update',doc_type:'Financial Statement',type_index:29,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Company Advisor'},
+    {id:'b3',name:'Butterfly - EV Calculations',doc_type:'Financial Model',type_index:46,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Internal'},
+    {id:'b4',name:'Project Butterfly - Business Plan',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Company Advisor'},
+    {id:'b5',name:'Butterfly - Market Sizing',doc_type:'Research Report',type_index:31,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Internal'},
+  ],
+  horizon:[
+    {id:'h1',name:'Project Horizon - CIM',doc_type:'CIM / OM',type_index:49,date:'2021-06-15',confidentiality:'Proprietary',company:'Project Horizon',industry:'Healthcare',source:'Company Advisor'},
+    {id:'h2',name:'Project Horizon - IC Memo',doc_type:'Investment Committee Memo',type_index:53,date:'2021-07-01',confidentiality:'Highly Confidential',company:'Project Horizon',industry:'Healthcare',source:'Internal'},
+  ],
+  atlas:[{id:'a1',name:'Project Atlas - CIM',doc_type:'CIM / OM',type_index:49,date:'2023-01-15',confidentiality:'Proprietary',company:'Project Atlas',industry:'Technology',source:'Company Advisor'}],
+  nova:[{id:'n1',name:'Project Nova - CIM',doc_type:'CIM / OM',type_index:49,date:'2020-09-01',confidentiality:'Proprietary',company:'Project Nova',industry:'Industrials',source:'Company Advisor'}],
+  cedar:[{id:'c1',name:'Project Cedar - Teaser',doc_type:'Marketing Material',type_index:40,date:'2022-11-01',confidentiality:'Proprietary',company:'Project Cedar',industry:'Consumer',source:'Company Advisor'}],
+};
+
+const CANDIDATE_DOCS = [
+  {id:'d1',rank:1,name:'Project Butterfly - Fact Pack',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',source:'Company Advisor'},
+  {id:'d2',rank:2,name:'Project Butterfly - Business Plan',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',source:'Company Advisor'},
+  {id:'d3',rank:3,name:'Butterfly - Market Sizing',doc_type:'Research Report',type_index:31,date:'2022-04-01',confidentiality:'Proprietary',source:'Internal'},
+  {id:'d4',rank:4,name:'Project Butterfly - Current Trading Update',doc_type:'Financial Statement',type_index:29,date:'2022-04-01',confidentiality:'Proprietary',source:'Company Advisor'},
+  {id:'d5',rank:5,name:'Butterfly - EV Calculations',doc_type:'Financial Model',type_index:46,date:'2022-04-01',confidentiality:'Proprietary',source:'Internal'},
+];
+
+const TASKS = [
+  {id:'DRE-0047',query:"What was the target's EBITDA margin and how did it trend over the last two fiscal years?",cluster:'Project Butterfly',intent:'extraction_for_synthesis',status:'inprogress',updated:'May 14, 2026'},
+  {id:'DRE-0046',query:'Find the most recent board deck for this company',cluster:'Project Horizon',intent:'document_identification',status:'draft',updated:'May 13, 2026'},
+  {id:'DRE-0045',query:'How do the revenue figures in the CIM compare to the current trading update?',cluster:'Project Butterfly',intent:'comparative_analysis',status:'submitted',updated:'May 13, 2026'},
+  {id:'DRE-0044',query:'How has gross margin changed between FY2020 and FY2021?',cluster:'Project Atlas',intent:'temporal_tracking',status:'submitted',updated:'May 12, 2026'},
+  {id:'DRE-0043',query:'Does the financial model reflect the assumptions stated in the Fact Pack?',cluster:'Project Nova',intent:'compliance_verification',status:'rework',updated:'May 12, 2026'},
+];
+
+const STATUS = {
+  all:{label:'All',pill:'pill-gray'},
+  inprogress:{label:'In Progress',pill:'pill-teal'},
+  draft:{label:'Draft',pill:'pill-gray'},
+  submitted:{label:'Submitted',pill:'pill-accent'},
+  rework:{label:'Rework',pill:'pill-amber'},
+};
+
+const app = {
+  page:'tasks',
+  theme:'light',
+  activeCluster:'butterfly',
+  selectedDocIds:new Set(['b1','b2','b3']),
+  detailDocId:null,
+  taskTab:'all',
+  query:{
+    text:"What was the target's EBITDA margin and how did it trend over the last two fiscal years?",
+    intent:'extraction_for_synthesis',
+    usage:'Core Diligence & Screening',
+    truePos:true,
+    mappings:{},
+  },
+  evalScores:{d1:'relevant',d2:'partial',d3:'not',d4:null,d5:null},
+};
+
+const SAMPLE_EVIDENCE = {
+  b1:{role:'primary',evidence:'Fact Pack contains a two-year EBITDA bridge showing margin expansion from 18.2% to 21.4% between FY2020 and FY2021. Directly answers margin level and trend.',location:'Section 3.1 - Financial Summary, p. 8-9'},
+  b2:{role:'supporting',evidence:'Trading update provides interim revenue and margin commentary but lacks full two-year historical bridge.',location:'Summary table, p. 2'},
+  b3:{role:'primary',evidence:'EV model tab includes attributable EBITDA and margin by year with opex build assumptions underlying the deal thesis.',location:'Model tabs: P&L, Cash EBITDA'},
+};
+
+function flatDocs(){ return Object.values(ALL_DOCS).flat(); }
+function getDoc(id){ return flatDocs().find(d=>d.id===id); }
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),1800);
+}
+
+function toggleTheme(){
+  app.theme = app.theme==='light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme',app.theme);
+  document.body.setAttribute('data-theme',app.theme);
+  document.getElementById('theme-label').textContent = app.theme==='light' ? 'Dark mode' : 'Light mode';
+}
+
+function showPage(id){
+  app.page=id;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{
+    n.classList.toggle('active', n.dataset.page===id);
+  });
+  const titles={tasks:'My Tasks',corpus:'Corpus Browser',query:'Query Creation',eval:'Doc Retrieval Eval'};
+  document.getElementById('topbar-title').textContent = titles[id] || 'Trajan';
+  renderWorkflow();
+  if(id==='corpus'){ renderClusters(); renderCorpusDocs(); renderTray(); }
+  if(id==='query'){ renderQueryPage(); }
+  if(id==='eval'){ renderEvalPage(); }
+}
+
+function renderWorkflow(){
+  const steps=[
+    {id:'corpus',label:'Corpus Browser'},
+    {id:'query',label:'Query Creation'},
+    {id:'eval',label:'Doc Retrieval Eval'},
+  ];
+  const idx = steps.findIndex(s=>s.id===app.page);
+  const el=document.getElementById('workflow-steps');
+  if(app.page==='tasks'){ el.innerHTML=''; return; }
+  el.innerHTML = steps.map((s,i)=>{
+    const done = i < idx;
+    const active = s.id===app.page;
+    const cls = active?'active':(done?'done':'');
+    return `${i>0?'<span class="wf-sep">/</span>':''}<span class="wf-step ${cls}"><span class="wf-dot"></span>${s.label}</span>`;
+  }).join('');
+}
+
+document.getElementById('sidebar-nav').addEventListener('click',e=>{
+  const item=e.target.closest('.nav-item');
+  if(item) showPage(item.dataset.page);
+});
+
+/* TASKS */
+function initTasks(){
+  const tabs=document.getElementById('task-tabs');
+  const counts={all:TASKS.length};
+  TASKS.forEach(t=>{ counts[t.status]=(counts[t.status]||0)+1; });
+  tabs.innerHTML = Object.entries(STATUS).map(([k,v])=>{
+    const c = k==='all' ? counts.all : (counts[k]||0);
+    return `<div class="status-tab${app.taskTab===k?' active':''}" data-tab="${k}">${v.label}<span class="tab-count">${c}</span></div>`;
+  }).join('');
+  tabs.querySelectorAll('.status-tab').forEach(tab=>{
+    tab.onclick=()=>{ app.taskTab=tab.dataset.tab; initTasks(); renderTasks(); };
+  });
+  const cf=document.getElementById('task-cluster-filter');
+  cf.innerHTML='<option value="">All clusters</option>'+Object.values(CLUSTERS).map(c=>`<option>${c.name}</option>`).join('');
+  renderTasks();
+}
+
+function renderTasks(){
+  const q=(document.getElementById('task-search').value||'').toLowerCase();
+  const cluster=document.getElementById('task-cluster-filter').value;
+  let list=TASKS.filter(t=>{
+    if(app.taskTab!=='all' && t.status!==app.taskTab) return false;
+    if(cluster && t.cluster!==cluster) return false;
+    if(q && !t.query.toLowerCase().includes(q) && !t.id.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  const tbody=document.getElementById('task-tbody');
+  tbody.innerHTML = list.map(t=>{
+    const st=STATUS[t.status]||STATUS.draft;
+    return `<tr>
+      <td><div class="td-title" title="${t.query}">${t.query}</div><div class="td-sub">${t.id}</div></td>
+      <td><span class="pill ${st.pill}">${st.label}</span></td>
+      <td>${t.cluster}</td>
+      <td style="font-family:var(--font-mono);font-size:11px">${t.intent}</td>
+      <td>${t.updated}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openTask('${t.id}')">Open</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('task-pager-info').textContent=`Showing ${list.length} task${list.length!==1?'s':''}`;
+}
+
+function openTask(id){
+  if(id==='DRE-0047') showPage('eval');
+  else showPage('corpus');
+  showToast('Opened '+id);
+}
+
+function startNewTask(){
+  app.selectedDocIds = new Set();
+  showPage('corpus');
+  showToast('Select documents, then continue to Query Creation');
+}
+
+/* CORPUS */
+function renderClusters(){
+  const list=document.getElementById('cluster-list');
+  list.innerHTML = Object.entries(CLUSTERS).map(([id,c])=>`
+    <div class="cluster-item${app.activeCluster===id?' active':''}" data-cluster="${id}">
+      <span class="cluster-count">${(ALL_DOCS[id]||[]).length}</span>
+      <div class="cluster-name">${c.name}</div>
+      <div class="cluster-meta">${c.meta}</div>
+    </div>`).join('');
+  list.querySelectorAll('.cluster-item').forEach(el=>{
+    el.onclick=()=>{
+      app.activeCluster=el.dataset.cluster;
+      app.detailDocId=null;
+      renderClusters(); renderCorpusDocs();
+      document.getElementById('detail-body').innerHTML='<div class="detail-empty">Select a document to view metadata</div>';
+      document.getElementById('detail-actions').style.display='none';
+    };
+  });
+}
+
+function renderCorpusDocs(){
+  const docs=ALL_DOCS[app.activeCluster]||[];
+  const search=(document.getElementById('corpus-search').value||'').toLowerCase();
+  const dtype=document.getElementById('filter-doc-type').value;
+  const conf=document.getElementById('filter-conf').value;
+  const filtered=docs.filter(d=>{
+    if(search && !d.name.toLowerCase().includes(search)) return false;
+    if(dtype && d.doc_type!==dtype) return false;
+    if(conf && d.confidentiality!==conf) return false;
+    return true;
+  });
+  const c=CLUSTERS[app.activeCluster];
+  document.getElementById('corpus-panel-title').textContent=c?c.name:'';
+  document.getElementById('corpus-count-label').textContent=`Showing ${filtered.length}`;
+  const grid=document.getElementById('doc-grid');
+  grid.innerHTML = filtered.length ? filtered.map(d=>{
+    const sel=app.detailDocId===d.id;
+    const inQ=app.selectedDocIds.has(d.id);
+    return `<div class="doc-card${sel?' selected':''}${inQ?' in-query':''}" onclick="selectCorpusDoc('${d.id}')">
+      <div class="doc-card-name">${d.name}${inQ?' (selected)':''}</div>
+      <span class="doc-type-badge">${d.doc_type}</span>
+      <div class="doc-meta"><span>${d.date}</span><span>${d.source}</span><span>${d.confidentiality}</span></div>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);padding:24px">No documents match filters</div>';
+}
+
+function selectCorpusDoc(id){
+  app.detailDocId=id;
+  const d=getDoc(id);
+  if(!d) return;
+  renderCorpusDocs();
+  document.getElementById('detail-body').innerHTML=`
+    <div style="font-weight:600;color:var(--text);margin-bottom:8px">${d.name}</div>
+    <div style="margin-bottom:12px;color:var(--text3)">${d.doc_type} | index ${d.type_index}</div>
+    <div class="doc-meta" style="gap:8px">
+      <div><strong>Company</strong> ${d.company}</div>
+      <div><strong>Industry</strong> ${d.industry}</div>
+      <div><strong>Date</strong> ${d.date}</div>
+      <div><strong>Source</strong> ${d.source}</div>
+      <div><strong>Confidentiality</strong> ${d.confidentiality}</div>
+    </div>`;
+  document.getElementById('detail-actions').style.display='flex';
+  document.getElementById('use-doc-btn').textContent = app.selectedDocIds.has(id) ? 'Remove from query' : 'Add to query';
+}
+
+function toggleDocForQuery(){
+  if(!app.detailDocId) return;
+  const id=app.detailDocId;
+  if(app.selectedDocIds.has(id)){
+    app.selectedDocIds.delete(id);
+    delete app.query.mappings[id];
+  } else {
+    app.selectedDocIds.add(id);
+    const sample=SAMPLE_EVIDENCE[id];
+    app.query.mappings[id]={
+      role: sample?.role || 'supporting',
+      evidence: sample?.evidence || '',
+      location: sample?.location || '',
+    };
+  }
+  document.getElementById('use-doc-btn').textContent = app.selectedDocIds.has(id) ? 'Remove from query' : 'Add to query';
+  renderTray(); renderCorpusDocs();
+}
+
+function renderTray(){
+  const tray=document.getElementById('tray-docs');
+  const btn=document.getElementById('to-query-btn');
+  if(!app.selectedDocIds.size){
+    tray.innerHTML='<span style="font-size:11px;color:var(--text3);font-style:italic">None</span>';
+    btn.disabled=true; return;
+  }
+  btn.disabled=false;
+  tray.innerHTML = [...app.selectedDocIds].map(id=>{
+    const d=getDoc(id);
+    const label=d?d.name.replace(/^Project [^-]+ - /,'').slice(0,28):id;
+    return `<span class="tray-chip">${label}<span class="tray-x" onclick="removeFromTray('${id}')">x</span></span>`;
+  }).join('');
+}
+
+function removeFromTray(id){
+  app.selectedDocIds.delete(id);
+  delete app.query.mappings[id];
+  renderTray(); renderCorpusDocs();
+  if(app.detailDocId===id) document.getElementById('use-doc-btn').textContent='Add to query';
+}
+
+function clearCorpusFilters(){
+  document.getElementById('corpus-search').value='';
+  document.getElementById('filter-doc-type').value='';
+  document.getElementById('filter-conf').value='';
+  renderCorpusDocs();
+}
+
+function goToQueryCreation(){
+  if(!app.selectedDocIds.size){ showToast('Select at least one document'); return; }
+  [...app.selectedDocIds].forEach(id=>{
+    if(!app.query.mappings[id]){
+      const s=SAMPLE_EVIDENCE[id];
+      app.query.mappings[id]={role:s?.role||'supporting',evidence:s?.evidence||'',location:s?.location||''};
+    }
+  });
+  showPage('query');
+}
+
+/* QUERY */
+function renderQueryPage(){
+  const cluster=CLUSTERS[app.activeCluster];
+  document.getElementById('query-text').value=app.query.text;
+  document.getElementById('char-count').textContent=(app.query.text.length)+' / 500';
+  document.getElementById('query-bottom-meta').textContent=`Cluster: ${cluster?.name||'-'} | Expert: EXP-009 | Task: DRE-0047`;
+
+  document.getElementById('query-context-panel').innerHTML = `
+    <div style="padding:8px 10px;background:var(--teal-dim);border:1px solid rgba(13,148,136,.25);border-radius:var(--radius);margin-bottom:10px">
+      <div style="font-size:10px;color:var(--teal);text-transform:uppercase;margin-bottom:3px">Cluster</div>
+      <div style="font-weight:600;font-size:13px">${cluster?.name||''}</div>
+      <div style="font-size:11px;color:var(--text3)">${cluster?.meta||''}</div>
+    </div>
+    ${[...app.selectedDocIds].map(id=>{
+      const d=getDoc(id); if(!d) return '';
+      return `<div class="context-card"><div class="context-card-name">${d.name}</div><div class="context-card-meta">${d.doc_type} | ${d.date}</div></div>`;
+    }).join('')}`;
+
+  document.getElementById('intent-grid').innerHTML = INTENTS.map(i=>`
+    <div class="tag-option${app.query.intent===i.id?' selected':''}" data-intent="${i.id}">
+      <div class="tag-option-name">${i.name}</div>
+      <div class="tag-option-desc">${i.desc}</div>
+    </div>`).join('');
+  document.getElementById('intent-grid').querySelectorAll('.tag-option').forEach(el=>{
+    el.onclick=()=>{ app.query.intent=el.dataset.intent; renderQueryPage(); validateQuery(); };
+  });
+
+  document.getElementById('usage-grid').innerHTML = USAGES.map(u=>`
+    <div class="usage-chip${app.query.usage===u?' selected':''}">${u}</div>`).join('');
+  document.getElementById('usage-grid').querySelectorAll('.usage-chip').forEach(el=>{
+    el.onclick=()=>{ app.query.usage=el.textContent; renderQueryPage(); validateQuery(); };
+  });
+
+  document.getElementById('example-queries').innerHTML = [
+    {i:'extraction_for_synthesis',q:"What was the target's EBITDA margin and how did it trend over the last two fiscal years?"},
+    {i:'document_identification',q:'Find the most recent board deck for this company.'},
+    {i:'comparative_analysis',q:'How do the revenue figures in the CIM compare to the current trading update?'},
+  ].map(e=>`<div class="example-q" data-q="${e.q.replace(/"/g,'&quot;')}"><span style="font-size:9px;color:var(--text3);text-transform:uppercase">${e.i}</span><br>${e.q}</div>`).join('');
+  document.getElementById('example-queries').querySelectorAll('.example-q').forEach(el=>{
+    el.onclick=()=>{ app.query.text=el.dataset.q; onQueryInput(); };
+  });
+
+  renderMappingTable();
+  document.getElementById('true-pos-toggle').classList.toggle('on', app.query.truePos);
+  validateQuery();
+}
+
+function renderMappingTable(){
+  const tbody=document.getElementById('mapping-tbody');
+  const ids=[...app.selectedDocIds];
+  if(!ids.length){
+    tbody.innerHTML='<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:20px">No documents selected - return to Corpus Browser</td></tr>';
+    document.getElementById('mapping-footer').innerHTML='';
+    return;
+  }
+  let primary=0, supporting=0;
+  tbody.innerHTML = ids.map(id=>{
+    const d=getDoc(id);
+    const m=app.query.mappings[id]||{role:'supporting',evidence:'',location:''};
+    if(m.role==='primary') primary++; else supporting++;
+    return `<tr>
+      <td style="min-width:160px"><div class="map-doc-name">${d?.name||id}</div><div class="map-doc-type">${d?.doc_type||''}</div></td>
+      <td style="width:130px">
+        <div class="role-btns">
+          <button type="button" class="role-btn primary${m.role==='primary'?' active':''}" onclick="setDocRole('${id}','primary')">Primary</button>
+          <button type="button" class="role-btn supporting${m.role==='supporting'?' active':''}" onclick="setDocRole('${id}','supporting')">Supporting</button>
+        </div>
+      </td>
+      <td>
+        <textarea class="textarea map-evidence" placeholder="Why does this document answer the query? Cite specific data or sections." oninput="setMappingField('${id}','evidence',this.value)">${m.evidence||''}</textarea>
+        <input class="input map-location" placeholder="Location (e.g. p. 8, Section 3.1)" value="${(m.location||'').replace(/"/g,'&quot;')}" oninput="setMappingField('${id}','location',this.value)">
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('mapping-footer').innerHTML=`
+    <span><span class="legend-dot" style="background:var(--teal)"></span>${primary} primary</span>
+    <span><span class="legend-dot" style="background:var(--text3)"></span>${supporting} supporting</span>`;
+}
+
+function setDocRole(id, role){
+  if(!app.query.mappings[id]) app.query.mappings[id]={role, evidence:'', location:''};
+  app.query.mappings[id].role=role;
+  renderMappingTable(); validateQuery();
+}
+
+function setMappingField(id, field, val){
+  if(!app.query.mappings[id]) app.query.mappings[id]={role:'supporting',evidence:'',location:''};
+  app.query.mappings[id][field]=val;
+  validateQuery();
+}
+
+function onQueryInput(){
+  app.query.text=document.getElementById('query-text').value;
+  document.getElementById('char-count').textContent=app.query.text.length+' / 500';
+  validateQuery();
+}
+
+function toggleTruePos(){
+  app.query.truePos=!app.query.truePos;
+  document.getElementById('true-pos-toggle').classList.toggle('on', app.query.truePos);
+  validateQuery();
+}
+
+function validateQuery(){
+  const q=app.query.text.trim();
+  const ids=[...app.selectedDocIds];
+  const mappings=ids.map(id=>app.query.mappings[id]).filter(Boolean);
+  const hasPrimary=mappings.some(m=>m.role==='primary');
+  const allEvidence=mappings.length>0 && mappings.every(m=>(m.evidence||'').trim().length>=20);
+  const checks=[
+    {ok:q.length>0, label:'Query text is not empty'},
+    {ok:!!app.query.intent, label:'Query intent type selected'},
+    {ok:!!app.query.usage, label:'Usage type selected'},
+    {ok:ids.length>0, label:'At least one document selected'},
+    {ok:hasPrimary, label:'At least one primary document assigned'},
+    {ok:allEvidence, label:'Evidence/reasoning filled for all mapped docs (min 20 chars)'},
+    {ok:app.query.truePos, label:'True positive confirmed'},
+  ];
+  document.getElementById('validation-row').innerHTML = checks.map(c=>`
+    <div class="val-item ${c.ok?'pass':'fail'}"><span class="val-dot" style="background:${c.ok?'var(--green)':'var(--red)'}"></span>${c.label}</div>`).join('');
+  document.getElementById('submit-query-btn').disabled = !checks.every(c=>c.ok);
+}
+
+function submitQuery(){
+  validateQuery();
+  if(document.getElementById('submit-query-btn').disabled) return;
+  showPage('eval');
+  showToast('Query submitted - retrieval candidates loaded');
+}
+
+/* EVAL */
+function renderEvalPage(){
+  document.getElementById('eval-query-pill').textContent = app.query.text;
+  document.getElementById('eval-meta').innerHTML = `
+    <span class="pill pill-teal" style="margin-right:6px">${app.query.usage}</span>
+    <span class="pill pill-accent" style="margin-right:6px">${app.query.intent}</span>
+    Task DRE-0047 | ${CLUSTERS[app.activeCluster]?.name||''} - ${CANDIDATE_DOCS.length} candidate docs`;
+
+  const container=document.getElementById('eval-cards');
+  container.innerHTML = CANDIDATE_DOCS.map(d=>{
+    const score=app.evalScores[d.id];
+    const cardCls = score==='relevant'?'relevant':score==='partial'?'partial':score==='not'?'not-relevant':'';
+    return `<div class="result-card ${cardCls}" id="card-${d.id}">
+      <div class="card-head">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="rank-num">#${d.rank}</span>
+          <div><div class="rest-name">${d.name}</div><div class="rest-meta">${d.doc_type} (index ${d.type_index}) | ${d.date}</div></div>
+        </div>
+        <div class="card-actions">
+          <span style="font-size:11px;color:var(--text3)">Relevance:</span>
+          <div class="score-btns">
+            <button class="sb rel${score==='relevant'?' active-score':''}" onclick="setEvalScore('${d.id}','relevant')">Relevant</button>
+            <button class="sb part${score==='partial'?' active-score':''}" onclick="setEvalScore('${d.id}','partial')">Partial</button>
+            <button class="sb not${score==='not'?' active-score':''}" onclick="setEvalScore('${d.id}','not')">Not</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-fields">
+          <div><div class="field-label">Source</div><div class="field-val">${d.source}</div></div>
+          <div><div class="field-label">Confidentiality</div><div class="field-val">${d.confidentiality}</div></div>
+          <div><div class="field-label">System rank</div><div class="field-val">#${d.rank}</div></div>
+        </div>
+        <div class="evidence-row">
+          <input class="input" placeholder="Section / page reference" id="evid-${d.id}">
+          <select class="select" style="width:auto" id="loctype-${d.id}">
+            <option>text_passage</option><option>table</option><option>exhibit</option><option>header_metadata</option>
+          </select>
+        </div>
+        <textarea class="textarea" rows="3" placeholder="2-4 sentences: how does this document connect to the query?" id="reason-${d.id}"></textarea>
+      </div>
+    </div>`;
+  }).join('') + `
+    <div class="recall-section">
+      <div class="form-section-title">Recall misses</div>
+      <p class="form-hint">Documents you believe are relevant but missing from the candidate set.</p>
+      <div class="recall-miss-row">
+        <input class="input" placeholder="Document name / ID" style="flex:1">
+        <textarea class="textarea" placeholder="Why did retrieval miss this?" style="flex:2" rows="2"></textarea>
+      </div>
+    </div>`;
+
+  const prefill = app.query.mappings['b1'];
+  if(prefill){
+    const r=document.getElementById('reason-d1');
+    const e=document.getElementById('evid-d1');
+    if(r) r.value=prefill.evidence;
+    if(e) e.value=prefill.location;
+  }
+  updateEvalStats();
+}
+
+function setEvalScore(id, score){
+  app.evalScores[id]=score;
+  const card=document.getElementById('card-'+id);
+  card.classList.remove('relevant','partial','not-relevant');
+  if(score==='relevant') card.classList.add('relevant');
+  if(score==='partial') card.classList.add('partial');
+  if(score==='not') card.classList.add('not-relevant');
+  card.querySelectorAll('.sb').forEach(b=>b.classList.remove('active-score'));
+  const cls={relevant:'rel',partial:'part',not:'not'}[score];
+  card.querySelector('.sb.'+cls).classList.add('active-score');
+  updateEvalStats();
+}
+
+function updateEvalStats(){
+  const vals=Object.values(app.evalScores);
+  const rel=vals.filter(v=>v==='relevant').length;
+  const part=vals.filter(v=>v==='partial').length;
+  const not=vals.filter(v=>v==='not').length;
+  const reviewed=rel+part+not;
+  document.getElementById('eval-stats').innerHTML=`
+    <div class="stat-row"><span>Reviewed</span><span>${reviewed} / ${CANDIDATE_DOCS.length}</span></div>
+    <div class="stat-row"><span>Relevant</span><span class="stat-val good">${rel}</span></div>
+    <div class="stat-row"><span>Partial</span><span class="stat-val warn">${part}</span></div>
+    <div class="stat-row"><span>Not relevant</span><span class="stat-val bad">${not}</span></div>`;
+}
+
+/* INIT */
+function initFilters(){
+  const types=new Set(flatDocs().map(d=>d.doc_type));
+  document.getElementById('filter-doc-type').innerHTML='<option value="">All doc types</option>'+[...types].map(t=>`<option>${t}</option>`).join('');
+}
+
+// Default mappings for demo
+['b1','b2','b3'].forEach(id=>{
+  if(SAMPLE_EVIDENCE[id]) app.query.mappings[id]={...SAMPLE_EVIDENCE[id]};
+});
+
+initFilters();
+initTasks();
+renderClusters();
+showPage('tasks');
+</script>
+</body>
+</html>
