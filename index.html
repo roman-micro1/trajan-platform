@@ -63,7 +63,19 @@ body[data-theme="dark"]{color-scheme:dark;}
 .wf-step.done .wf-dot{background:var(--green);}
 .wf-step.active{color:var(--accent);font-weight:600;}
 .wf-step.active .wf-dot{background:var(--accent);}
+.wf-step.clickable{cursor:pointer;}
+.wf-step.clickable:hover{color:var(--accent);}
 .wf-sep{color:var(--text3);font-size:10px;}
+.ref-banner{padding:10px 20px;background:var(--accent-dim);border-bottom:1px solid rgba(65,105,255,.25);font-size:12px;color:var(--text2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;flex-shrink:0;}
+.ref-banner strong{color:var(--text);}
+.eval-top-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.eval-top-actions{flex-shrink:0;display:flex;gap:8px;flex-wrap:wrap;}
+.page.query-ref-mode .query-form-panel .form-interactive{pointer-events:none;opacity:.95;}
+.map-ref-evidence{font-size:12px;color:var(--text2);line-height:1.55;white-space:pre-wrap;}
+.map-ref-location{font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:6px;}
+.ref-role-pill{display:inline-block;font-size:10px;font-weight:600;text-transform:uppercase;padding:3px 8px;border-radius:4px;}
+.ref-role-pill.primary{background:var(--teal-dim);color:var(--teal);}
+.ref-role-pill.supporting{background:var(--bg3);color:var(--text3);}
 .topbar-actions{display:flex;align-items:center;gap:10px;}
 .theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font-sans);}
 .theme-toggle:hover{background:var(--surface);color:var(--text);}
@@ -89,6 +101,8 @@ body[data-theme="dark"]{color-scheme:dark;}
 .pill-amber{background:var(--amber-dim);color:var(--amber);}
 .pill-red{background:var(--red-dim);color:var(--red);}
 .pill-gray{background:rgba(139,145,168,.12);color:var(--text2);}
+.pill-purple{background:var(--purple-dim);color:var(--purple);}
+.tag-grid-answer{grid-template-columns:1fr 1fr;}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:8px 16px;border-radius:var(--radius);opacity:0;transition:opacity .2s;pointer-events:none;z-index:600;}
 .toast.show{opacity:1;}
 
@@ -190,9 +204,6 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
 .val-item.pass{color:var(--green);}
 .val-item.fail{color:var(--red);}
 .val-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);flex-shrink:0;}
-.query-side{width:220px;border-left:1px solid var(--border);background:var(--bg2);padding:14px 12px;overflow-y:auto;flex-shrink:0;}
-.example-q{padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:11px;color:var(--text2);margin-bottom:6px;cursor:pointer;line-height:1.4;}
-.example-q:hover{border-color:var(--accent);}
 .bottom-bar{padding:12px 20px;border-top:1px solid var(--border);background:var(--bg2);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
 
 /* EVAL */
@@ -220,12 +231,23 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
 .sb.part.active-score{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
 .sb.not.active-score{background:var(--red-dim);border-color:var(--red);color:var(--red);}
 .evidence-row{display:flex;gap:8px;margin-bottom:8px;}
+.reason-block{margin-top:4px;}
+.reason-block.hidden,.hard-neg-row.hidden{display:none;}
+.reason-hint{font-size:11px;color:var(--text3);margin-top:4px;}
+.reason-hint.ok{color:var(--green);}
+.reason-hint.warn{color:var(--amber);}
+.reason-hint.bad{color:var(--red);}
+.hard-neg-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:var(--red-dim);border:1px solid rgba(220,38,38,.25);border-radius:var(--radius);font-size:12px;color:var(--text2);}
+.hard-neg-row label{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.hard-neg-row input{width:14px;height:14px;accent-color:var(--red);cursor:pointer;}
 .eval-side{width:240px;border-left:1px solid var(--border);background:var(--bg2);padding:14px;overflow-y:auto;flex-shrink:0;display:flex;flex-direction:column;}
+.val-item.eval-val{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.val-item.eval-val .val-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
 .stat-row{display:flex;justify-content:space-between;padding:6px 9px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;font-size:12px;}
 .stat-val.good{color:var(--green);}.stat-val.warn{color:var(--amber);}.stat-val.bad{color:var(--red);}
 .recall-section{margin-top:12px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);}
 .recall-miss-row{display:flex;gap:8px;margin-bottom:8px;}
-@media(max-width:1100px){.sidebar{width:60px;}.sidebar .logo-text,.nav-item>span:first-child,.user-row div:last-child,.nav-step{display:none;}.main{margin-left:60px;}.query-workspace,.eval-workspace{flex-direction:column;}.context-panel,.query-side,.eval-side,.detail-panel{width:100%;max-height:200px;border:none;border-bottom:1px solid var(--border);}}
+@media(max-width:1100px){.sidebar{width:60px;}.sidebar .logo-text,.nav-item>span:first-child,.user-row div:last-child,.nav-step{display:none;}.main{margin-left:60px;}.query-workspace,.eval-workspace{flex-direction:column;}.context-panel,.eval-side,.detail-panel{width:100%;max-height:200px;border:none;border-bottom:1px solid var(--border);}}
 </style>
 </head>
 <body data-theme="light">
@@ -280,7 +302,7 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Query</th><th>Status</th><th>Cluster</th><th>Intent</th><th>Updated</th><th></th></tr></thead>
+            <thead><tr><th>Query</th><th>Status</th><th>Cluster</th><th>Intent</th><th>Answer type</th><th>Updated</th><th></th></tr></thead>
             <tbody id="task-tbody"></tbody>
           </table>
         </div>
@@ -309,7 +331,7 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
         </div>
         <div class="doc-panel">
           <div style="display:flex;justify-content:space-between;margin-bottom:12px;font-size:11px;color:var(--text3)">
-            <span id="corpus-panel-title">Project Butterfly</span>
+            <span id="corpus-panel-title">Project Louvre</span>
             <span id="corpus-count-label"></span>
           </div>
           <div class="doc-grid" id="doc-grid"></div>
@@ -332,18 +354,27 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
   <!-- QUERY CREATION -->
   <section class="page" id="page-query">
     <div class="page-body">
+      <div class="ref-banner" id="query-ref-banner" style="display:none">
+        <span><strong>Reference view</strong> — your submitted query, selected corpus documents, and ground-truth reasoning. Evaluation labels are saved while you review.</span>
+        <button class="btn btn-primary btn-sm" onclick="returnToEval()">Back to Doc Retrieval Eval</button>
+      </div>
       <div class="query-workspace">
         <div class="context-panel" id="query-context-panel"></div>
-        <div class="query-form-panel">
+        <div class="query-form-panel form-interactive">
           <div class="form-section">
             <div class="form-section-title">Query text</div>
             <p class="form-hint">Write a structured finance or legal query grounded in your selected documents. At least one corpus document must contain a true positive answer.</p>
-            <textarea class="textarea" id="query-text" rows="4" maxlength="500" placeholder="e.g. What was the target's EBITDA margin and how did it trend over the last two fiscal years?" oninput="onQueryInput()"></textarea>
+            <textarea class="textarea" id="query-text" rows="4" maxlength="500" placeholder="e.g. What was Louvre's cash EBITDA margin in FY2017, and how does it compare to the FY2022 management case?" oninput="onQueryInput()"></textarea>
             <div style="text-align:right;font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:4px" id="char-count">0 / 500</div>
           </div>
           <div class="form-section">
             <div class="form-section-title">Query intent type</div>
             <div class="tag-grid" id="intent-grid"></div>
+          </div>
+          <div class="form-section">
+            <div class="form-section-title">Query answer type</div>
+            <p class="form-hint"><strong>Extractive</strong> — answerable by pulling existing sentences or figures from the document(s), without further reasoning or judgement. <strong>Abstractive</strong> — requires calculation, reasoning, or judgement on top of existing content to answer properly.</p>
+            <div class="tag-grid tag-grid-answer" id="answer-grid"></div>
           </div>
           <div class="form-section">
             <div class="form-section-title">Usage type</div>
@@ -375,15 +406,12 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
             <div class="val-row" id="validation-row"></div>
           </div>
         </div>
-        <div class="query-side">
-          <div class="form-section-title">Example queries</div>
-          <div id="example-queries"></div>
-        </div>
       </div>
       <div class="bottom-bar">
         <span style="font-size:12px;color:var(--text3)" id="query-bottom-meta"></span>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-secondary" onclick="showPage('corpus')">Back to Corpus</button>
+        <div style="display:flex;gap:8px" id="query-bottom-actions">
+          <button class="btn btn-secondary" id="query-back-corpus-btn" onclick="showPage('corpus')">Back to Corpus</button>
+          <button class="btn btn-primary" id="query-back-eval-btn" style="display:none" onclick="returnToEval()">Back to Doc Retrieval Eval</button>
           <button class="btn btn-primary" id="submit-query-btn" disabled onclick="submitQuery()">Submit and run retrieval</button>
         </div>
       </div>
@@ -394,21 +422,25 @@ tbody td{padding:10px 14px;font-size:12px;color:var(--text2);}
   <section class="page" id="page-eval">
     <div class="page-body">
       <div class="eval-top">
-        <div class="query-pill" id="eval-query-pill"></div>
-        <div class="eval-meta" id="eval-meta"></div>
+        <div class="eval-top-head">
+          <div style="flex:1;min-width:200px">
+            <div class="query-pill" id="eval-query-pill"></div>
+            <div class="eval-meta" id="eval-meta"></div>
+          </div>
+          <div class="eval-top-actions">
+            <button class="btn btn-secondary btn-sm" onclick="viewQueryFromEval()">View query &amp; ground truth</button>
+          </div>
+        </div>
       </div>
       <div class="eval-workspace">
         <div class="eval-main" id="eval-cards"></div>
         <div class="eval-side">
+          <button class="btn btn-secondary btn-sm" style="width:100%;margin-bottom:12px" onclick="viewQueryFromEval()">Query &amp; ground truth docs</button>
           <div class="form-section-title">Progress</div>
           <div id="eval-stats"></div>
           <div class="form-section-title" style="margin-top:14px">Before submit</div>
-          <div id="eval-checklist" style="font-size:12px;color:var(--text2);line-height:1.8">
-            <div>All docs labeled</div>
-            <div>Evidence and reasoning filled</div>
-            <div>Hard negatives reviewed</div>
-          </div>
-          <button class="btn btn-primary" style="margin-top:auto;width:100%" onclick="showToast('Task submitted')">Submit evaluation</button>
+          <div id="eval-checklist"></div>
+          <button class="btn btn-primary" id="eval-submit-btn" style="margin-top:auto;width:100%" disabled onclick="submitEval()">Submit evaluation</button>
         </div>
       </div>
     </div>
@@ -426,10 +458,14 @@ const INTENTS = [
   {id:'compliance_verification', name:'compliance_verification', desc:'Checking whether conditions or requirements are met'},
   {id:'extraction_for_synthesis', name:'extraction_for_synthesis', desc:'Pulling structured data to populate a model or memo'},
 ];
+const ANSWER_TYPES = [
+  {id:'extractive', name:'extractive', desc:'Pull facts, figures, or stated passages directly from the document(s) — no further reasoning required (e.g. what were the ARR figures for ExampleCo from 2021 to 2025?)'},
+  {id:'abstractive', name:'abstractive', desc:'Requires calculation, reasoning, or judgement to synthesize an answer (e.g. how do you foresee revenue changing for ExampleCo from 2026 to 2027?)'},
+];
 const USAGES = ['Core Diligence & Screening','Document Review & Drafting','Legal & Regulatory','Structured Extraction','Monitoring & Updates'];
 
 const CLUSTERS = {
-  butterfly:{name:'Project Butterfly', meta:'Packaging | Buyout', count:10},
+  louvre:{name:'Project Louvre', meta:'NPL / Debt Collection | Buyout', count:11},
   horizon:{name:'Project Horizon', meta:'Healthcare | Buyout', count:5},
   atlas:{name:'Project Atlas', meta:'Technology | Growth', count:3},
   nova:{name:'Project Nova', meta:'Industrials | Buyout', count:3},
@@ -437,36 +473,42 @@ const CLUSTERS = {
 };
 
 const ALL_DOCS = {
-  butterfly:[
-    {id:'b1',name:'Project Butterfly - Fact Pack',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Company Advisor'},
-    {id:'b2',name:'Project Butterfly - Current Trading Update',doc_type:'Financial Statement',type_index:29,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Company Advisor'},
-    {id:'b3',name:'Butterfly - EV Calculations',doc_type:'Financial Model',type_index:46,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Internal'},
-    {id:'b4',name:'Project Butterfly - Business Plan',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Company Advisor'},
-    {id:'b5',name:'Butterfly - Market Sizing',doc_type:'Research Report',type_index:31,date:'2022-04-01',confidentiality:'Proprietary',company:'Project Butterfly',industry:'Packaging (Plastics)',source:'Internal'},
+  louvre:[
+    {id:'l1',name:'2024.06 - Louvre IRC vF.pdf',doc_type:'Investment Committee Memo',type_index:53,date:'2024-06-01',confidentiality:'Highly Confidential',company:'Project Louvre',industry:'Financials',source:'Internal'},
+    {id:'l2',name:'2024.06 - Louvre model vF.xlsx',doc_type:'Financial Model',type_index:46,date:'2024-06-01',confidentiality:'Highly Confidential',company:'Project Louvre',industry:'Financials',source:'Internal'},
+    {id:'l3',name:'Project Louvre - Final Due Diligence Report.pdf',doc_type:'Investigative Report',type_index:39,date:'2017-06-01',confidentiality:'Proprietary',company:'Project Louvre',industry:'Financials',source:'Licensed Provider'},
+    {id:'l4',name:'Project Louvre - Info Memo (May 2017).pdf',doc_type:'CIM / OM',type_index:49,date:'2017-05-01',confidentiality:'Proprietary',company:'Project Louvre',industry:'Financials',source:'Company Advisor'},
+    {id:'l5',name:'2017 02 09 - MCS _Bond prospectus.pdf',doc_type:'Security Filing',type_index:11,date:'2017-02-09',confidentiality:'Public',company:'Project Louvre',industry:'Financials',source:'Public'},
+    {id:'l6',name:'2017 03 16 - Mona Lisa Roadshow Presentation_vNetroadshow.pdf',doc_type:'Marketing Material',type_index:40,date:'2017-03-16',confidentiality:'Proprietary',company:'Project Louvre',industry:'Financials',source:'Company Advisor'},
+    {id:'l7',name:'April 2017 Project Louvre -  OW document v2.0.pdf',doc_type:'Research Report',type_index:31,date:'2017-04-01',confidentiality:'Proprietary',company:'Project Louvre',industry:'Financials',source:'Licensed Provider'},
+    {id:'l8',name:'Barclays - Discussion Materials (20220112).pdf',doc_type:'Research Report',type_index:31,date:'2022-01-12',confidentiality:'Proprietary',company:'Project Louvre',industry:'Financials',source:'Licensed Provider'},
+    {id:'l9',name:'Debt Purchasing Accounting - Lowell.pdf',doc_type:'Research Report',type_index:31,date:'',confidentiality:'Proprietary',company:'',industry:'Financials',source:'Licensed Provider'},
+    {id:'l10',name:'NPL sector metrics.pdf',doc_type:'Research Report',type_index:31,date:'',confidentiality:'Proprietary',company:'',industry:'Financials',source:'Internal'},
+    {id:'l11',name:'Response to Bybrook\'s Thesis vSent.pdf',doc_type:'Investor Communication',type_index:26,date:'',confidentiality:'Proprietary',company:'Project Louvre',industry:'Financials',source:'Internal'},
   ],
   horizon:[
-    {id:'h1',name:'Project Horizon - CIM',doc_type:'CIM / OM',type_index:49,date:'2021-06-15',confidentiality:'Proprietary',company:'Project Horizon',industry:'Healthcare',source:'Company Advisor'},
-    {id:'h2',name:'Project Horizon - IC Memo',doc_type:'Investment Committee Memo',type_index:53,date:'2021-07-01',confidentiality:'Highly Confidential',company:'Project Horizon',industry:'Healthcare',source:'Internal'},
+    {id:'h1',name:'Project Horizon - CIM',doc_type:'CIM / OM',type_index:49,date:'2021-06-15',confidentiality:'Proprietary',company:'Project Horizon',industry:'Health Care',source:'Company Advisor'},
+    {id:'h2',name:'Project Horizon - IC Memo',doc_type:'Investment Committee Memo',type_index:53,date:'2021-07-01',confidentiality:'Highly Confidential',company:'Project Horizon',industry:'Health Care',source:'Internal'},
   ],
-  atlas:[{id:'a1',name:'Project Atlas - CIM',doc_type:'CIM / OM',type_index:49,date:'2023-01-15',confidentiality:'Proprietary',company:'Project Atlas',industry:'Technology',source:'Company Advisor'}],
+  atlas:[{id:'a1',name:'Project Atlas - CIM',doc_type:'CIM / OM',type_index:49,date:'2023-01-15',confidentiality:'Proprietary',company:'Project Atlas',industry:'Information Technology',source:'Company Advisor'}],
   nova:[{id:'n1',name:'Project Nova - CIM',doc_type:'CIM / OM',type_index:49,date:'2020-09-01',confidentiality:'Proprietary',company:'Project Nova',industry:'Industrials',source:'Company Advisor'}],
-  cedar:[{id:'c1',name:'Project Cedar - Teaser',doc_type:'Marketing Material',type_index:40,date:'2022-11-01',confidentiality:'Proprietary',company:'Project Cedar',industry:'Consumer',source:'Company Advisor'}],
+  cedar:[{id:'c1',name:'Project Cedar - Teaser',doc_type:'Marketing Material',type_index:40,date:'2022-11-01',confidentiality:'Proprietary',company:'Project Cedar',industry:'Consumer Discretionary',source:'Company Advisor'}],
 };
 
 const CANDIDATE_DOCS = [
-  {id:'d1',rank:1,name:'Project Butterfly - Fact Pack',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',source:'Company Advisor'},
-  {id:'d2',rank:2,name:'Project Butterfly - Business Plan',doc_type:'CIM / OM',type_index:49,date:'2022-04-01',confidentiality:'Proprietary',source:'Company Advisor'},
-  {id:'d3',rank:3,name:'Butterfly - Market Sizing',doc_type:'Research Report',type_index:31,date:'2022-04-01',confidentiality:'Proprietary',source:'Internal'},
-  {id:'d4',rank:4,name:'Project Butterfly - Current Trading Update',doc_type:'Financial Statement',type_index:29,date:'2022-04-01',confidentiality:'Proprietary',source:'Company Advisor'},
-  {id:'d5',rank:5,name:'Butterfly - EV Calculations',doc_type:'Financial Model',type_index:46,date:'2022-04-01',confidentiality:'Proprietary',source:'Internal'},
+  {id:'d1',rank:1,name:'2024.06 - Louvre IRC vF.pdf',doc_type:'Investment Committee Memo',type_index:53,date:'2024-06-01',confidentiality:'Highly Confidential',source:'Internal'},
+  {id:'d2',rank:2,name:'2024.06 - Louvre model vF.xlsx',doc_type:'Financial Model',type_index:46,date:'2024-06-01',confidentiality:'Highly Confidential',source:'Internal'},
+  {id:'d3',rank:3,name:'Project Louvre - Final Due Diligence Report.pdf',doc_type:'Investigative Report',type_index:39,date:'2017-06-01',confidentiality:'Proprietary',source:'Licensed Provider'},
+  {id:'d4',rank:4,name:'Project Louvre - Info Memo (May 2017).pdf',doc_type:'CIM / OM',type_index:49,date:'2017-05-01',confidentiality:'Proprietary',source:'Company Advisor'},
+  {id:'d5',rank:5,name:'Barclays - Discussion Materials (20220112).pdf',doc_type:'Research Report',type_index:31,date:'2022-01-12',confidentiality:'Proprietary',source:'Licensed Provider'},
 ];
 
 const TASKS = [
-  {id:'DRE-0047',query:"What was the target's EBITDA margin and how did it trend over the last two fiscal years?",cluster:'Project Butterfly',intent:'extraction_for_synthesis',status:'inprogress',updated:'May 14, 2026'},
-  {id:'DRE-0046',query:'Find the most recent board deck for this company',cluster:'Project Horizon',intent:'document_identification',status:'draft',updated:'May 13, 2026'},
-  {id:'DRE-0045',query:'How do the revenue figures in the CIM compare to the current trading update?',cluster:'Project Butterfly',intent:'comparative_analysis',status:'submitted',updated:'May 13, 2026'},
-  {id:'DRE-0044',query:'How has gross margin changed between FY2020 and FY2021?',cluster:'Project Atlas',intent:'temporal_tracking',status:'submitted',updated:'May 12, 2026'},
-  {id:'DRE-0043',query:'Does the financial model reflect the assumptions stated in the Fact Pack?',cluster:'Project Nova',intent:'compliance_verification',status:'rework',updated:'May 12, 2026'},
+  {id:'DRE-0047',query:"What was Louvre's cash EBITDA margin trend between FY2015 and FY2017, and how does it compare to management's projected margin trajectory through FY2022?",cluster:'Project Louvre',intent:'extraction_for_synthesis',answerType:'abstractive',status:'inprogress',updated:'May 14, 2026'},
+  {id:'DRE-0046',query:"Does Louvre's net debt position at 31 December 2016 comply with the LTV covenant threshold stipulated in its bond and revolving credit facility agreements?",cluster:'Project Louvre',intent:'compliance_verification',answerType:'extractive',status:'draft',updated:'May 13, 2026'},
+  {id:'DRE-0045',query:"How does Louvre's EBITDA margin and market positioning compare to its closest European NPL competitors, and how has management responded to short-seller criticisms of its business model?",cluster:'Project Louvre',intent:'comparative_analysis',answerType:'abstractive',status:'submitted',updated:'May 13, 2026'},
+  {id:'DRE-0044',query:'What was Louvre\'s cash EBITDA margin in FY2017?',cluster:'Project Louvre',intent:'extraction_for_synthesis',answerType:'extractive',status:'submitted',updated:'May 12, 2026'},
+  {id:'DRE-0043',query:'How has gross margin changed between FY2020 and FY2021?',cluster:'Project Atlas',intent:'temporal_tracking',answerType:'abstractive',status:'rework',updated:'May 12, 2026'},
 ];
 
 const STATUS = {
@@ -480,28 +522,37 @@ const STATUS = {
 const app = {
   page:'tasks',
   theme:'light',
-  activeCluster:'butterfly',
-  selectedDocIds:new Set(['b1','b2','b3']),
+  activeCluster:'louvre',
+  selectedDocIds:new Set(['l1','l2','l3','l4']),
   detailDocId:null,
   taskTab:'all',
   query:{
-    text:"What was the target's EBITDA margin and how did it trend over the last two fiscal years?",
+    text:"What was Louvre's cash EBITDA margin trend between FY2015 and FY2017, and how does it compare to management's projected margin trajectory through FY2022?",
     intent:'extraction_for_synthesis',
+    answerType:'abstractive',
     usage:'Core Diligence & Screening',
     truePos:true,
     mappings:{},
   },
-  evalScores:{d1:'relevant',d2:'partial',d3:'not',d4:null,d5:null},
+  evalScores:{d1:'relevant',d2:'relevant',d3:'partial',d4:'partial',d5:'not'},
+  evalHardNegatives:{},
+  evalStarted:false,
+  queryRefMode:false,
 };
 
 const SAMPLE_EVIDENCE = {
-  b1:{role:'primary',evidence:'Fact Pack contains a two-year EBITDA bridge showing margin expansion from 18.2% to 21.4% between FY2020 and FY2021. Directly answers margin level and trend.',location:'Section 3.1 - Financial Summary, p. 8-9'},
-  b2:{role:'supporting',evidence:'Trading update provides interim revenue and margin commentary but lacks full two-year historical bridge.',location:'Summary table, p. 2'},
-  b3:{role:'primary',evidence:'EV model tab includes attributable EBITDA and margin by year with opex build assumptions underlying the deal thesis.',location:'Model tabs: P&L, Cash EBITDA'},
+  l1:{role:'primary',evidence:'Cash EBITDA margin table: 55.9% (FY15) ? 56.9% (FY16) ? 58.9% (FY17B) ? 66.5% (FY22E). Base and management case both shown. Directly answers historical trend and projected trajectory for comparison.',location:'p. 8, management case table'},
+  l2:{role:'primary',evidence:'Full projection model underlying the IRC — attributable cash EBITDA and margin by year, opex build and acquisition volume assumptions supporting the margin bridge analysis.',location:'Model tabs: P&L, Cash EBITDA'},
+  l3:{role:'supporting',evidence:'Historical income statement: adj. cash EBITDA FY15 €53.7m, FY16 €57.9m. Business plan section with FY17B–FY19F projections corroborates IRC historical figures.',location:'p. 42–81, Income Statement + Business Plan'},
+  l4:{role:'supporting',evidence:'57% cash EBITDA margin cited alongside 21% net revenue growth. High-level financials summary for investors; less granular than IRC margin bridge.',location:'p. 11, Historical Financial Performance'},
+  l5:{role:'primary',evidence:'Key terms: €200m FRN, E+575bps, incurrence covenants, NC2 call protection. Restricted group scope and covenant definitions governing LTV threshold.',location:'Group structure, p. 6 — covenants section'},
+  l8:{role:'primary',evidence:'P/BV vs RoAE regression for Hoist Finance, B2Holding, Intrum, doValue, Encore, PRA Group. Implied multiples table at various profitability levels. Direct comp set for European NPL peers.',location:'p. 10, P/BV vs RoAE 2022E analysis'},
+  l11:{role:'primary',evidence:'Point-by-point management rebuttal to short thesis on DC space. Addresses collection curve assumptions, ERC methodology and competitive moat.',location:'Full document'},
 };
 
 function flatDocs(){ return Object.values(ALL_DOCS).flat(); }
 function getDoc(id){ return flatDocs().find(d=>d.id===id); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 function showToast(msg){
   const t=document.getElementById('toast');
@@ -516,19 +567,48 @@ function toggleTheme(){
   document.getElementById('theme-label').textContent = app.theme==='light' ? 'Dark mode' : 'Light mode';
 }
 
-function showPage(id){
+function showPage(id, opts={}){
+  if(id==='eval') app.queryRefMode=false;
+  if(id==='corpus' || id==='tasks'){ app.queryRefMode=false; if(id==='tasks') app.evalStarted=false; }
+  if(id==='query' && opts.refMode) app.queryRefMode=true;
+  if(id==='query' && opts.forceEdit) app.queryRefMode=false;
+
   app.page=id;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>{
     n.classList.toggle('active', n.dataset.page===id);
   });
-  const titles={tasks:'My Tasks',corpus:'Corpus Browser',query:'Query Creation',eval:'Doc Retrieval Eval'};
+  const titles={
+    tasks:'My Tasks',
+    corpus:'Corpus Browser',
+    query: app.queryRefMode ? 'Query & Ground Truth (Reference)' : 'Query Creation',
+    eval:'Doc Retrieval Eval',
+  };
   document.getElementById('topbar-title').textContent = titles[id] || 'Trajan';
   renderWorkflow();
   if(id==='corpus'){ renderClusters(); renderCorpusDocs(); renderTray(); }
   if(id==='query'){ renderQueryPage(); }
-  if(id==='eval'){ renderEvalPage(); }
+  if(id==='eval'){ app.returnToEval=true; renderEvalPage(); }
+}
+
+function viewQueryFromEval(){
+  if(!app.evalStarted){ showToast('Submit the query first to unlock reference view'); return; }
+  app.queryRefMode=true;
+  app.returnToEval=true;
+  showPage('query', {refMode:true});
+}
+
+function returnToEval(){
+  app.queryRefMode=false;
+  showPage('eval');
+}
+
+function navigateWorkflow(stepId){
+  if(!app.evalStarted){ showPage(stepId); return; }
+  if(stepId==='eval') returnToEval();
+  else if(stepId==='query') viewQueryFromEval();
+  else showPage(stepId);
 }
 
 function renderWorkflow(){
@@ -537,20 +617,26 @@ function renderWorkflow(){
     {id:'query',label:'Query Creation'},
     {id:'eval',label:'Doc Retrieval Eval'},
   ];
-  const idx = steps.findIndex(s=>s.id===app.page);
+  const curIdx={corpus:0,query:1,eval:2}[app.page] ?? -1;
   const el=document.getElementById('workflow-steps');
   if(app.page==='tasks'){ el.innerHTML=''; return; }
   el.innerHTML = steps.map((s,i)=>{
-    const done = i < idx;
-    const active = s.id===app.page;
-    const cls = active?'active':(done?'done':'');
-    return `${i>0?'<span class="wf-sep">/</span>':''}<span class="wf-step ${cls}"><span class="wf-dot"></span>${s.label}</span>`;
+    const done=i<curIdx;
+    const active=i===curIdx;
+    const cls=active?'active':(done?'done':'');
+    const clickable=app.evalStarted;
+    return `${i>0?'<span class="wf-sep">/</span>':''}<span class="wf-step ${cls}${clickable?' clickable':''}"${clickable?` onclick="navigateWorkflow('${s.id}')"`:''}><span class="wf-dot"></span>${s.label}</span>`;
   }).join('');
 }
 
 document.getElementById('sidebar-nav').addEventListener('click',e=>{
   const item=e.target.closest('.nav-item');
-  if(item) showPage(item.dataset.page);
+  if(!item) return;
+  const page=item.dataset.page;
+  if(page==='query' && app.evalStarted){ viewQueryFromEval(); return; }
+  if(page==='eval' && app.evalStarted){ returnToEval(); return; }
+  if(page==='query') app.queryRefMode=false;
+  showPage(page);
 });
 
 /* TASKS */
@@ -587,6 +673,7 @@ function renderTasks(){
       <td><span class="pill ${st.pill}">${st.label}</span></td>
       <td>${t.cluster}</td>
       <td style="font-family:var(--font-mono);font-size:11px">${t.intent}</td>
+      <td><span class="pill ${t.answerType==='extractive'?'pill-teal':'pill-purple'}">${t.answerType||'—'}</span></td>
       <td>${t.updated}</td>
       <td><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();openTask('${t.id}')">Open</button></td>
     </tr>`;
@@ -595,12 +682,21 @@ function renderTasks(){
 }
 
 function openTask(id){
-  if(id==='DRE-0047') showPage('eval');
-  else showPage('corpus');
+  if(id==='DRE-0047'){
+    app.evalStarted=true;
+    app.returnToEval=true;
+    showPage('eval');
+  } else {
+    app.evalStarted=false;
+    app.queryRefMode=false;
+    showPage('corpus');
+  }
   showToast('Opened '+id);
 }
 
 function startNewTask(){
+  app.evalStarted=false;
+  app.queryRefMode=false;
   app.selectedDocIds = new Set();
   showPage('corpus');
   showToast('Select documents, then continue to Query Creation');
@@ -733,9 +829,19 @@ function goToQueryCreation(){
 /* QUERY */
 function renderQueryPage(){
   const cluster=CLUSTERS[app.activeCluster];
+  const ref=app.queryRefMode;
+  document.getElementById('page-query').classList.toggle('query-ref-mode', ref);
+  document.getElementById('query-ref-banner').style.display=ref?'flex':'none';
+  document.getElementById('query-back-corpus-btn').style.display=ref?'none':'inline-flex';
+  document.getElementById('query-back-eval-btn').style.display=ref?'inline-flex':'none';
+  document.getElementById('submit-query-btn').style.display=ref?'none':'inline-flex';
+
   document.getElementById('query-text').value=app.query.text;
+  document.getElementById('query-text').readOnly=ref;
   document.getElementById('char-count').textContent=(app.query.text.length)+' / 500';
-  document.getElementById('query-bottom-meta').textContent=`Cluster: ${cluster?.name||'-'} | Expert: EXP-009 | Task: DRE-0047`;
+  document.getElementById('query-bottom-meta').textContent=ref
+    ? `Reference | Cluster: ${cluster?.name||'-'} | Task: DRE-0047`
+    : `Cluster: ${cluster?.name||'-'} | Expert: EXP-009 | Task: DRE-0047`;
 
   document.getElementById('query-context-panel').innerHTML = `
     <div style="padding:8px 10px;background:var(--teal-dim);border:1px solid rgba(13,148,136,.25);border-radius:var(--radius);margin-bottom:10px">
@@ -745,7 +851,9 @@ function renderQueryPage(){
     </div>
     ${[...app.selectedDocIds].map(id=>{
       const d=getDoc(id); if(!d) return '';
-      return `<div class="context-card"><div class="context-card-name">${d.name}</div><div class="context-card-meta">${d.doc_type} | ${d.date}</div></div>`;
+      const m=app.query.mappings[id];
+      const roleBadge=ref&&m?`<span class="ref-role-pill ${m.role}" style="margin-top:6px">${m.role}</span>`:'';
+      return `<div class="context-card"><div class="context-card-name">${d.name}</div><div class="context-card-meta">${d.doc_type} | ${d.date}</div>${roleBadge}</div>`;
     }).join('')}`;
 
   document.getElementById('intent-grid').innerHTML = INTENTS.map(i=>`
@@ -757,19 +865,19 @@ function renderQueryPage(){
     el.onclick=()=>{ app.query.intent=el.dataset.intent; renderQueryPage(); validateQuery(); };
   });
 
+  document.getElementById('answer-grid').innerHTML = ANSWER_TYPES.map(a=>`
+    <div class="tag-option${app.query.answerType===a.id?' selected':''}" data-answer="${a.id}">
+      <div class="tag-option-name">${a.name}</div>
+      <div class="tag-option-desc">${a.desc}</div>
+    </div>`).join('');
+  document.getElementById('answer-grid').querySelectorAll('.tag-option').forEach(el=>{
+    el.onclick=()=>{ app.query.answerType=el.dataset.answer; renderQueryPage(); validateQuery(); };
+  });
+
   document.getElementById('usage-grid').innerHTML = USAGES.map(u=>`
     <div class="usage-chip${app.query.usage===u?' selected':''}">${u}</div>`).join('');
   document.getElementById('usage-grid').querySelectorAll('.usage-chip').forEach(el=>{
     el.onclick=()=>{ app.query.usage=el.textContent; renderQueryPage(); validateQuery(); };
-  });
-
-  document.getElementById('example-queries').innerHTML = [
-    {i:'extraction_for_synthesis',q:"What was the target's EBITDA margin and how did it trend over the last two fiscal years?"},
-    {i:'document_identification',q:'Find the most recent board deck for this company.'},
-    {i:'comparative_analysis',q:'How do the revenue figures in the CIM compare to the current trading update?'},
-  ].map(e=>`<div class="example-q" data-q="${e.q.replace(/"/g,'&quot;')}"><span style="font-size:9px;color:var(--text3);text-transform:uppercase">${e.i}</span><br>${e.q}</div>`).join('');
-  document.getElementById('example-queries').querySelectorAll('.example-q').forEach(el=>{
-    el.onclick=()=>{ app.query.text=el.dataset.q; onQueryInput(); };
   });
 
   renderMappingTable();
@@ -777,9 +885,11 @@ function renderQueryPage(){
   validateQuery();
 }
 
+
 function renderMappingTable(){
   const tbody=document.getElementById('mapping-tbody');
   const ids=[...app.selectedDocIds];
+  const ref=app.queryRefMode;
   if(!ids.length){
     tbody.innerHTML='<tr><td colspan="3" style="color:var(--text3);text-align:center;padding:20px">No documents selected - return to Corpus Browser</td></tr>';
     document.getElementById('mapping-footer').innerHTML='';
@@ -790,6 +900,15 @@ function renderMappingTable(){
     const d=getDoc(id);
     const m=app.query.mappings[id]||{role:'supporting',evidence:'',location:''};
     if(m.role==='primary') primary++; else supporting++;
+    if(ref){
+      const ev=(m.evidence||'').trim() ? escHtml(m.evidence) : '<span style="color:var(--text3);font-style:italic">No evidence recorded</span>';
+      const loc=m.location ? `<div class="map-ref-location">${escHtml(m.location)}</div>` : '';
+      return `<tr>
+        <td style="min-width:160px"><div class="map-doc-name">${d?.name||id}</div><div class="map-doc-type">${d?.doc_type||''}</div></td>
+        <td style="width:100px"><span class="ref-role-pill ${m.role}">${m.role}</span></td>
+        <td><div class="map-ref-evidence">${ev}</div>${loc}</td>
+      </tr>`;
+    }
     return `<tr>
       <td style="min-width:160px"><div class="map-doc-name">${d?.name||id}</div><div class="map-doc-type">${d?.doc_type||''}</div></td>
       <td style="width:130px">
@@ -842,6 +961,7 @@ function validateQuery(){
   const checks=[
     {ok:q.length>0, label:'Query text is not empty'},
     {ok:!!app.query.intent, label:'Query intent type selected'},
+    {ok:!!app.query.answerType, label:'Query answer type selected'},
     {ok:!!app.query.usage, label:'Usage type selected'},
     {ok:ids.length>0, label:'At least one document selected'},
     {ok:hasPrimary, label:'At least one primary document assigned'},
@@ -856,6 +976,8 @@ function validateQuery(){
 function submitQuery(){
   validateQuery();
   if(document.getElementById('submit-query-btn').disabled) return;
+  app.evalStarted=true;
+  app.returnToEval=true;
   showPage('eval');
   showToast('Query submitted - retrieval candidates loaded');
 }
@@ -866,12 +988,14 @@ function renderEvalPage(){
   document.getElementById('eval-meta').innerHTML = `
     <span class="pill pill-teal" style="margin-right:6px">${app.query.usage}</span>
     <span class="pill pill-accent" style="margin-right:6px">${app.query.intent}</span>
+    <span class="pill ${app.query.answerType==='extractive'?'pill-teal':'pill-purple'}" style="margin-right:6px">${app.query.answerType}</span>
     Task DRE-0047 | ${CLUSTERS[app.activeCluster]?.name||''} - ${CANDIDATE_DOCS.length} candidate docs`;
 
   const container=document.getElementById('eval-cards');
   container.innerHTML = CANDIDATE_DOCS.map(d=>{
     const score=app.evalScores[d.id];
-    const cardCls = score==='relevant'?'relevant':score==='partial'?'partial':score==='not'?'not-relevant':'';
+    let cardCls = score==='relevant'?'relevant':score==='partial'?'partial':score==='not'?'not-relevant':'';
+    if(app.evalHardNegatives[d.id]) cardCls += ' hard-neg';
     return `<div class="result-card ${cardCls}" id="card-${d.id}">
       <div class="card-head">
         <div style="display:flex;align-items:center;gap:10px">
@@ -899,7 +1023,13 @@ function renderEvalPage(){
             <option>text_passage</option><option>table</option><option>exhibit</option><option>header_metadata</option>
           </select>
         </div>
-        <textarea class="textarea" rows="3" placeholder="2-4 sentences: how does this document connect to the query?" id="reason-${d.id}"></textarea>
+        <div class="reason-block${score==='relevant'?'':' hidden'}" id="reason-wrap-${d.id}">
+          <textarea class="textarea" rows="3" placeholder="2–4 sentences: how does this document connect to the query?" id="reason-${d.id}" oninput="onEvalReasonInput('${d.id}')"></textarea>
+          <div class="reason-hint" id="reason-hint-${d.id}">Required: 2–4 sentences when marked Relevant.</div>
+        </div>
+        <div class="hard-neg-row${score==='not'?'':' hidden'}" id="hardneg-wrap-${d.id}">
+          <label><input type="checkbox" id="hardneg-${d.id}" ${app.evalHardNegatives[d.id]?'checked':''} onchange="toggleHardNegative('${d.id}', this.checked)"> Mark as hard negative <span style="color:var(--text3)">(optional)</span></label>
+        </div>
       </div>
     </div>`;
   }).join('') + `
@@ -912,27 +1042,123 @@ function renderEvalPage(){
       </div>
     </div>`;
 
-  const prefill = app.query.mappings['b1'];
+  const prefill = app.query.mappings['l1'];
   if(prefill){
     const r=document.getElementById('reason-d1');
     const e=document.getElementById('evid-d1');
     if(r) r.value=prefill.evidence;
     if(e) e.value=prefill.location;
   }
+  const prefill2 = app.query.mappings['l2'];
+  if(prefill2){
+    const r=document.getElementById('reason-d2');
+    const e=document.getElementById('evid-d2');
+    if(r) r.value=prefill2.evidence;
+    if(e) e.value=prefill2.location;
+  }
+  const prefill3 = app.query.mappings['l3'];
+  if(prefill3){
+    const r=document.getElementById('reason-d3');
+    const e=document.getElementById('evid-d3');
+    if(r) r.value=prefill3.evidence;
+    if(e) e.value=prefill3.location;
+  }
+  const prefill4 = app.query.mappings['l4'];
+  if(prefill4){
+    const r=document.getElementById('reason-d4');
+    const e=document.getElementById('evid-d4');
+    if(r) r.value=prefill4.evidence;
+    if(e) e.value=prefill4.location;
+  }
   updateEvalStats();
+  validateEval();
+}
+
+function countSentences(text){
+  const t=(text||'').trim();
+  if(!t) return 0;
+  const parts=t.split(/(?<=[.!?])\s+/).map(s=>s.trim()).filter(Boolean);
+  if(parts.length) return parts.length;
+  return 1;
+}
+
+function reasonSentenceStatus(text){
+  const n=countSentences(text);
+  if(n===0) return {ok:false, n:0, msg:'Required: 2–4 sentences when marked Relevant.'};
+  if(n<2) return {ok:false, n, msg:`${n} sentence${n===1?'':'s'} — add ${2-n} more (2–4 required).`};
+  if(n>4) return {ok:false, n, msg:`${n} sentences — shorten to at most 4.`};
+  return {ok:true, n, msg:`${n} sentences — looks good.`};
+}
+
+function onEvalReasonInput(id){
+  updateReasonHint(id);
+  validateEval();
+}
+
+function updateReasonHint(id){
+  const hint=document.getElementById('reason-hint-'+id);
+  const ta=document.getElementById('reason-'+id);
+  if(!hint||!ta) return;
+  const st=reasonSentenceStatus(ta.value);
+  hint.textContent=st.msg;
+  hint.className='reason-hint '+(st.ok?'ok':st.n>0?'warn':'bad');
 }
 
 function setEvalScore(id, score){
   app.evalScores[id]=score;
+  if(score!=='not') delete app.evalHardNegatives[id];
   const card=document.getElementById('card-'+id);
-  card.classList.remove('relevant','partial','not-relevant');
+  card.classList.remove('relevant','partial','not-relevant','hard-neg');
   if(score==='relevant') card.classList.add('relevant');
   if(score==='partial') card.classList.add('partial');
   if(score==='not') card.classList.add('not-relevant');
+  if(app.evalHardNegatives[id]) card.classList.add('hard-neg');
   card.querySelectorAll('.sb').forEach(b=>b.classList.remove('active-score'));
   const cls={relevant:'rel',partial:'part',not:'not'}[score];
   card.querySelector('.sb.'+cls).classList.add('active-score');
+  const reasonWrap=document.getElementById('reason-wrap-'+id);
+  const hardWrap=document.getElementById('hardneg-wrap-'+id);
+  if(reasonWrap) reasonWrap.classList.toggle('hidden', score!=='relevant');
+  if(hardWrap) hardWrap.classList.toggle('hidden', score!=='not');
+  const hardCb=document.getElementById('hardneg-'+id);
+  if(hardCb) hardCb.checked=!!app.evalHardNegatives[id];
+  if(score==='relevant') updateReasonHint(id);
   updateEvalStats();
+  validateEval();
+}
+
+function toggleHardNegative(id, on){
+  if(on) app.evalHardNegatives[id]=true;
+  else delete app.evalHardNegatives[id];
+  const card=document.getElementById('card-'+id);
+  if(card) card.classList.toggle('hard-neg', !!on);
+  updateEvalStats();
+}
+
+function validateEval(){
+  const allLabeled=CANDIDATE_DOCS.every(d=>!!app.evalScores[d.id]);
+  const relevantDocs=CANDIDATE_DOCS.filter(d=>app.evalScores[d.id]==='relevant');
+  const relevantReasonOk=relevantDocs.every(d=>{
+    const ta=document.getElementById('reason-'+d.id);
+    return ta && reasonSentenceStatus(ta.value).ok;
+  });
+  relevantDocs.forEach(d=>updateReasonHint(d.id));
+  const hardNegCount=Object.keys(app.evalHardNegatives).length;
+  const checks=[
+    {ok:allLabeled, label:'All candidate docs have a relevance label'},
+    {ok:relevantDocs.length===0||relevantReasonOk, label:'Relevant docs have 2–4 sentence reasoning (partial / not: optional)'},
+    {ok:true, label:`Hard negative tags optional (${hardNegCount} marked)`},
+  ];
+  document.getElementById('eval-checklist').innerHTML=checks.map(c=>`
+    <div class="val-item eval-val ${c.ok?'pass':'fail'}"><span class="val-dot" style="background:${c.ok?'var(--green)':'var(--red)'}"></span>${c.label}</div>`).join('');
+  const btn=document.getElementById('eval-submit-btn');
+  if(btn) btn.disabled=!checks.every(c=>c.ok);
+}
+
+function submitEval(){
+  validateEval();
+  if(document.getElementById('eval-submit-btn').disabled) return;
+  showToast('Task submitted');
 }
 
 function updateEvalStats(){
@@ -940,12 +1166,14 @@ function updateEvalStats(){
   const rel=vals.filter(v=>v==='relevant').length;
   const part=vals.filter(v=>v==='partial').length;
   const not=vals.filter(v=>v==='not').length;
+  const hardNeg=Object.keys(app.evalHardNegatives).length;
   const reviewed=rel+part+not;
   document.getElementById('eval-stats').innerHTML=`
     <div class="stat-row"><span>Reviewed</span><span>${reviewed} / ${CANDIDATE_DOCS.length}</span></div>
     <div class="stat-row"><span>Relevant</span><span class="stat-val good">${rel}</span></div>
     <div class="stat-row"><span>Partial</span><span class="stat-val warn">${part}</span></div>
-    <div class="stat-row"><span>Not relevant</span><span class="stat-val bad">${not}</span></div>`;
+    <div class="stat-row"><span>Not relevant</span><span class="stat-val bad">${not}</span></div>
+    <div class="stat-row"><span>Hard negatives</span><span class="stat-val bad">${hardNeg}</span></div>`;
 }
 
 /* INIT */
@@ -954,8 +1182,8 @@ function initFilters(){
   document.getElementById('filter-doc-type').innerHTML='<option value="">All doc types</option>'+[...types].map(t=>`<option>${t}</option>`).join('');
 }
 
-// Default mappings for demo
-['b1','b2','b3'].forEach(id=>{
+// Default mappings for demo — Project Louvre Query 01
+['l1','l2','l3','l4'].forEach(id=>{
   if(SAMPLE_EVIDENCE[id]) app.query.mappings[id]={...SAMPLE_EVIDENCE[id]};
 });
 
